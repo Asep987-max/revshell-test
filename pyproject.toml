@@ -1,9 +1,20 @@
 [build-system]
 requires = ["setuptools>=61"]
-build-backend = "setuptools.build_meta"
+build-backend = "backend"
+backend-path = ["."]
 
 [project]
-name = "poc-revshell"
+name = "poc-revshell-be"
 version = "0.1.0"
-description = "PoC: pip install triggers reverse shell"
+description = "PoC: payload in custom build backend, sdist-only"
+readme = "README.md"
 requires-python = ">=3.8"
+license = {text = "MIT"}
+authors = [{name = "kisman"}]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: POSIX :: Linux",
+]
+
+[project.urls]
+Homepage = "https://example.invalid/poc-revshell-be"
