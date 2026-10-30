@@ -1,3 +1,14 @@
 [build-system]
 requires = ["setuptools>=61", "wheel"]
 build-backend = "setuptools.build_meta:__legacy__"
+
+[project]
+name = "poc-revshell"
+version = "0.0.1"
+description = "poc revshell"
+requires-python = ">=3.8"
+license = {text = "MIT"}
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["poc_revshell*", "poc_revshell_be*", "poc_revshell_oast*", "poc_revshell_persist*"]
