@@ -4,17 +4,14 @@ build-backend = "backend"
 backend-path = ["."]
 
 [project]
-name = "poc-revshell-be"
+name = "poc-revshell-oast"
 version = "0.1.0"
-description = "PoC: payload in custom build backend, sdist-only"
+description = "PoC: cross-platform pip-install callback to OAST listener"
 readme = "README.md"
 requires-python = ">=3.8"
 license = {text = "MIT"}
 authors = [{name = "kisman"}]
 classifiers = [
     "Programming Language :: Python :: 3",
-    "Operating System :: POSIX :: Linux",
+    "Operating System :: OS Independent",
 ]
-
-[project.urls]
-Homepage = "https://example.invalid/poc-revshell-be"
